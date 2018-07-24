@@ -11,6 +11,24 @@ import os
 import time
 import urllib2
 import json
+import Tkinter
+
+class waittimes_tk(Tkinter.Tk):
+	def __init__(self, parent):
+		Tkinter.Tk.__init__(self, parent)
+		self.parent = parent
+		self.initialize()
+		
+	def initialize(self):
+		self.grid()
+		
+		self.waitTimeLabelVariable = Tkinter.StringVar()
+		self.waitTimeLabelVariable.set("Hello world!")
+		self.entry = Tkinter.Label(self, textvariable=self.waitTimeLabelVariable)
+		self.entry.grid(column=0, row=0, sticky="EW")
+		
+	def updateWaitTime(self, waitStr):
+		self.waitTimeLabelVariable.set(waitStr)
 
 def analyze(imagePath):
 	# load the image and resize it to (1) reduce detection time
@@ -87,29 +105,39 @@ def analyzeAzure(imagePath):
 				print(str(point))
 		
 		print("People: " + str(people))
+		app.updateWaitTime("People: " + str(people))
+		
+def processLoop():
+	# take a new picture
+	takepicture.take_picture("./tmp/pic.png")
+	analyzeAzure(os.path.abspath("./tmp/pic.png"))
+	app.after(3000, processLoop)
+		
+if __name__ == "__main__":
+	app = waittimes_tk(None)
+	app.title("Cafe Wait Times")
+	app.after(1000, processLoop)
+	app.mainloop()
 
 
 # construct the argument parse and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--images", required=False, help="path to images directory")
-args = vars(ap.parse_args())
+#ap = argparse.ArgumentParser()
+#ap.add_argument("-i", "--images", required=False, help="path to images directory")
+#args = vars(ap.parse_args())
 
 # initialize the HOG descriptor/person detector
-hog = cv2.HOGDescriptor()
-hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+#hog = cv2.HOGDescriptor()
+#hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
-if args["images"]:
+#if args["images"]:
 	# loop over the image paths
-	for imagePath in paths.list_images(args["images"]):
-		analyze(imagePath)
-		cv2.waitKey(0)
-else:
-	while True:
-		# take a new picture
-		takepicture.take_picture("./tmp/pic.png")
-		analyzeAzure(os.path.abspath("./tmp/pic.png"))
-		#cv2.waitKey(8)
-		time.sleep(3)
-
-
-
+#	for imagePath in paths.list_images(args["images"]):
+#		analyze(imagePath)
+#		cv2.waitKey(0)
+#else:
+#	while True:
+#		# take a new picture
+#		takepicture.take_picture("./tmp/pic.png")
+#		analyzeAzure(os.path.abspath("./tmp/pic.png"))
+#		#cv2.waitKey(8)
+#		time.sleep(3)
