@@ -8,3 +8,5 @@ Install imutils
 ```
 $ pip install imutils
 ```
+
+Create "tmp" folder in cloned directory
